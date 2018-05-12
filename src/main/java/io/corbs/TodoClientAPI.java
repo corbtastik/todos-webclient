@@ -31,6 +31,8 @@ public class TodoClientAPI {
             .body(todo, Todo.class)
             .retrieve().bodyToMono(Todo.class);
 
+        System.out.println("Does this print?");
+
         return result;
     }
 
