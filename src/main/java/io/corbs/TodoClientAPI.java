@@ -1,6 +1,7 @@
 package io.corbs;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,16 +25,31 @@ public class TodoClientAPI {
     @PostMapping("/")
     public Mono<Todo> createTodo(@RequestBody Mono<Todo> todo) {
 
-        Mono<Todo> result = webClient.post()
+        Mono<Todo> retrieve = webClient.post()
             .uri("/")
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON)
             .body(todo, Todo.class)
             .retrieve().bodyToMono(Todo.class);
 
-        System.out.println("Does this print?");
+        retrieve.doOnNext(it -> {
 
-        return result;
+            Integer id = it.getId();
+            System.out.println(id);
+
+        });
+
+        Mono<Todo> exchange = webClient.post()
+                .uri("/")
+                .body(todo, Todo.class)
+                .exchange()
+                .flatMap(response -> response.bodyToMono(Todo.class));
+
+        Mono<ResponseEntity<Todo>> responseEntity = webClient.post()
+                .uri("/")
+                .body(todo, Todo.class)
+                .exchange()
+                .flatMap(response -> response.toEntity(Todo.class));
+
+        return exchange;
     }
 
     @GetMapping("/")
