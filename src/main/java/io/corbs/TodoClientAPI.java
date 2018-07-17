@@ -3,11 +3,15 @@ package io.corbs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static java.lang.String.format;
 
 /**
  * WebClient uses the same codecs as WebFlux server apps.  It shares base packaging
@@ -22,9 +26,9 @@ import reactor.core.publisher.Mono;
 @RestController
 public class TodoClientAPI {
 
-    private WebClient webClient;
-
     private static final Logger LOG = LoggerFactory.getLogger(TodoClientAPI.class);
+
+    private final WebClient webClient;
 
     @Autowired
     public TodoClientAPI(WebClient webClient) {
@@ -71,27 +75,27 @@ public class TodoClientAPI {
         Mono<Todo> mono = webClient.get()
             .uri("/todos/{id}", id)
             .accept(MediaType.APPLICATION_JSON)
-            .exchange()
-            .flatMap(response -> {
-                return response.bodyToMono(Todo.class);
-            });
+            .retrieve()
+            .onStatus(HttpStatus::is4xxClientError, response -> {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, format("todo.id=%d", id));
+            })
+            .bodyToMono(Todo.class);
 
         return mono;
     }
 
     @DeleteMapping("/")
-    public void delete() {
-        webClient.delete()
+    public Mono<Void> delete() {
+        return webClient.delete()
             .uri("/todos/")
             .retrieve().bodyToMono(Void.class);
-
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id) {
-        webClient.delete()
+    public Mono<Todo> delete(@PathVariable Integer id) {
+        return webClient.delete()
             .uri("/todos/{id}", id)
-            .retrieve().bodyToMono(Void.class);
+                .retrieve().bodyToMono(Todo.class);
     }
 
     @PatchMapping("/{id}")

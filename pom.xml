@@ -14,7 +14,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.2.RELEASE</version>
+		<version>2.0.3.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -63,12 +63,6 @@
 			<artifactId>reactor-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>io.gatling.highcharts</groupId>
-            <artifactId>gatling-charts-highcharts</artifactId>
-            <version>2.3.1</version>
-            <scope>test</scope>
-        </dependency>
 	</dependencies>
 
     <dependencyManagement>
@@ -92,27 +86,6 @@
                     <execution>
                         <goals>
                             <goal>build-info</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>io.gatling</groupId>
-                <artifactId>gatling-maven-plugin</artifactId>
-                <version>2.2.4</version>
-                <configuration>
-                    <!--   ...  -->
-                    <runMultipleSimulations>true</runMultipleSimulations>
-                    <includes>
-                        <!--<param>CreateSimulation</param>-->
-                        <!--<param>UpdateSimulation</param>-->
-                        <param>ReadSimulation</param>
-                    </includes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>integration-test</goal>
                         </goals>
                     </execution>
                 </executions>
