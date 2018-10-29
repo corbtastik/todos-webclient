@@ -44,7 +44,7 @@ public class TodoClientAPI {
     public Mono<Todo> createTodo(@RequestBody Mono<Todo> todo) {
 
         Mono<Todo> mono = webClient.post()
-                .uri("/todos/")
+                .uri("/")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(todo, Todo.class)
@@ -58,7 +58,7 @@ public class TodoClientAPI {
     public Flux<Todo> retrieve() {
 
         Flux<Todo> flux = webClient.get()
-            .uri("/todos/")
+            .uri("/")
             .retrieve()
             .bodyToFlux(Todo.class);
 
@@ -73,7 +73,7 @@ public class TodoClientAPI {
     public Mono<Todo> retrieve(@PathVariable Integer id) {
 
         Mono<Todo> mono = webClient.get()
-            .uri("/todos/{id}", id)
+            .uri("/{id}", id)
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .onStatus(HttpStatus::is4xxClientError, response -> {
@@ -87,21 +87,21 @@ public class TodoClientAPI {
     @DeleteMapping("/")
     public Mono<Void> delete() {
         return webClient.delete()
-            .uri("/todos/")
+            .uri("/")
             .retrieve().bodyToMono(Void.class);
     }
 
     @DeleteMapping("/{id}")
     public Mono<Todo> delete(@PathVariable Integer id) {
         return webClient.delete()
-            .uri("/todos/{id}", id)
+            .uri("/{id}", id)
                 .retrieve().bodyToMono(Todo.class);
     }
 
     @PatchMapping("/{id}")
     public Mono<Todo> update(@PathVariable Integer id, @RequestBody Mono<Todo> todo) {
         Mono<Todo> mono = webClient.patch()
-            .uri("/todos/{id}", id)
+            .uri("/{id}", id)
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
             .body(todo, Todo.class)
